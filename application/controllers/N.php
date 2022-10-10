@@ -37,7 +37,9 @@ class N extends CI_Controller {
 						$r=array("core_location l",
 						"locid,l.name,l.addr,city,prov,count(s.host) as t, sum(s.status) as u, count(s.host)-sum(s.status) as d",$where,$grpby); 
 						break;
-			case "dvc": $join=array(array("core_status s","n.host=s.host","left"));
+			case "dvc": $params=$this->input->post(array("status"));
+						if($params["status"]!="") $where=array("status"=>$params["status"]);
+						$join=array(array("core_status s","n.host=s.host","left"));
 						$r=array("core_node n","n.host,name,net,loc,grp,typ,if(status=1,'UP','DOWN') as stt,n.rowid",$where,$grpby); 
 						break;
 		}
@@ -61,7 +63,6 @@ class N extends CI_Controller {
 		if(isset($user)){
 			if($auth==$user){
 				$menu=$this->input->post("menu");
-				$params=$this->input->post(array("from","to"));
 				$asql=$this->sql($menu);
 				if(count($asql)>0){
 					if(count($asql[2])>0) $this->db->where($asql[2]);
