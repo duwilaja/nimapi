@@ -64,7 +64,7 @@ class N extends CI_Controller {
 			if($auth==$user){
 				$menu=$this->input->post("menu");
 				$asql=$this->sql($menu);
-				if(count($asql)>0){
+				if(count($asql)>1){
 					if(count($asql[2])>0) $this->db->where($asql[2]);
 					if($asql[3]!="") $this->db->group_by($asql[3]);
 					if(count($asql[4])>0){
