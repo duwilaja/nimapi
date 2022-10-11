@@ -69,6 +69,20 @@ class R extends CI_Controller {
 						$r=array("core_node n",
 						"n.host,n.name,n.net,n.typ,round(avg(rtt),2) as art, round(avg(ifnull(lost/cnt,0)*100),2) as lst",$where,$grpby); 
 						break;
+			case "svr": $id=$this->input->post("rowid");
+						if($id=="") $id="0";
+						$svr=$this->db->where("rowid",$id)->get("core_severity")->row();
+						$txt=""; $fld="''";
+						if($svr){
+							$fld=$svr["sensor"]; $txt=$svr["severity"];
+							$min=$svr["mn"]; $max=$svr["mx"]; $net=$svr["net"];
+							$where=array("$fld >="=>$min,"$fld <="=>$max);
+							if($net!="") $where=array("$fld >="=>$min,"$fld <="=>$max,"net="=>$net);
+						}else{
+							$where=array("0="=>1);
+						}
+						$r=array("core_node","host,name,net,typ,$fld as val,'$txt' as txt",$where,$grpby);
+						break;
 		}
 		$r[]=$join;
 		return $r;
@@ -92,7 +106,7 @@ class R extends CI_Controller {
 				$menu=$this->input->post("menu");
 				$params=$this->input->post(array("from","to"));
 				$asql=$this->sql($menu);
-				if(count($asql)>0){
+				if(count($asql)>1){
 					if(count($asql[2])>0) $this->db->where($asql[2]);
 					if($asql[3]!="") $this->db->group_by($asql[3]);
 					if(count($asql[4])>0){
