@@ -81,7 +81,7 @@ class R extends CI_Controller {
 						}else{
 							$where=array("0="=>1);
 						}
-						$join=array(array("core_status_sla s","n.host=s.host","left"));
+						$join=array("core_status_sla s","n.host=s.host","left");
 						$r=array("core_node n","n.host,n.name,n.net,n.typ,$fld as val,'$txt' as txt",$where,$grpby);
 						break;
 		}
