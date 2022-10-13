@@ -71,7 +71,7 @@ class R extends CI_Controller {
 						break;
 			case "svr": $id=$this->input->post("rowid");
 						if($id=="") $id="0";
-						$svr=$this->db->where("rowid",$id)->get("core_severity")->row();
+						$svr=$this->db->where("rowid",$id)->get("core_severity")->row_array();
 						$txt=""; $fld="''";
 						if($svr){
 							$fld=$svr["sensor"]; $txt=$svr["severity"];
@@ -81,7 +81,7 @@ class R extends CI_Controller {
 						}else{
 							$where=array("0="=>1);
 						}
-						$join=array("core_status_sla s","n.host=s.host","left");
+						$join=array(array("core_status_sla s","n.host=s.host","left"));
 						$r=array("core_node n","n.host,n.name,n.net,n.typ,$fld as val,'$txt' as txt",$where,$grpby);
 						break;
 		}
