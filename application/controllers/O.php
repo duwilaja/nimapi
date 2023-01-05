@@ -40,4 +40,68 @@ class O extends CI_Controller {
 		
 		echo json_encode($retval);
 	}
+	
+	public function map(){
+		$retval=array('code'=>"403",'ttl'=>"Session closed",'msgs'=>"Please login");
+		$user=$this->session->userdata('user_token');
+		$auth=$this->input->get_request_header('X-token', TRUE);
+		$data=array();
+		if(isset($user)){
+			if($auth==$user){
+				$sel="lat,lng,concat(l.name,'\n',l.addr) as name,locid,sum(s.status) as onoff,count(n.host) as cnt, (count(n.host)-sum(s.status)) as off";
+				$this->db->join("core_node n","l.locid=n.loc");
+				$this->db->join("core_status s","n.host=s.host");
+				$wh=array("lat<>"=>"","lng<>"=>"");
+				$grpb =array("lat","lng","l.name","l.addr","locid");
+				$rs=$this->db->select($sel)->where($wh)->group_by($grpb)->get("core_location l")->result();
+				$retval=array('code'=>"200",'ttl'=>"OK",'msgs'=>$rs);
+			}else{
+				$retval=array('code'=>"403",'ttl'=>"Invalid session",'msgs'=>"Invalid token");
+			}
+		}
+		
+		echo json_encode($retval);
+	}
+	
+	public function down(){
+		$retval=array('code'=>"403",'ttl'=>"Session closed",'msgs'=>"Please login");
+		$user=$this->session->userdata('user_token');
+		$auth=$this->input->get_request_header('X-token', TRUE);
+		$data=array();
+		if(isset($user)){
+			if($auth==$user){
+				$sel="n.host, name, MY_SECTOTIME(TIMESTAMPDIFF(SECOND,downsince,now())) as mstt";
+				$this->db->join("core_status s","n.host=s.host");
+				$wh=array("status"=>"0","downsince is not NULL"=>null);
+				$orde="downsince";
+				$rs=$this->db->select($sel)->where($wh)->order_by($orde)->get("core_node n")->result();
+				$retval=array('code'=>"200",'ttl'=>"OK",'msgs'=>$rs);
+			}else{
+				$retval=array('code'=>"403",'ttl'=>"Invalid session",'msgs'=>"Invalid token");
+			}
+		}
+		
+		echo json_encode($retval);
+	}
+	
+	public function net(){
+		$retval=array('code'=>"403",'ttl'=>"Session closed",'msgs'=>"Please login");
+		$user=$this->session->userdata('user_token');
+		$auth=$this->input->get_request_header('X-token', TRUE);
+		$data=array();
+		if(isset($user)){
+			if($auth==$user){
+				$sel="dari,ke";
+				//$this->db->join("core_status s","n.host=s.host");
+				//$wh=array("status"=>"0","downsince is not NULL"=>null);
+				//$orde="downsince";
+				$rs=$this->db->select($sel)->get("core_netdiagram")->result();
+				$retval=array('code'=>"200",'ttl'=>"OK",'msgs'=>$rs);
+			}else{
+				$retval=array('code'=>"403",'ttl'=>"Invalid session",'msgs'=>"Invalid token");
+			}
+		}
+		
+		echo json_encode($retval);
+	}
 }

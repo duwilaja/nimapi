@@ -31,6 +31,12 @@ class N extends CI_Controller {
 		$grpby="";
 		$join=array();
 		switch($x){
+			case "cat": $grpby="typ";
+						$join=array(array("core_status s","n.host=s.host","left"));
+						
+						$r=array("core_node n",
+						"typ,count(s.host) as t, sum(s.status) as u, count(s.host)-sum(s.status) as d,date_format(min(checked),'%a %e %b, %H:%i') as cek",$where,$grpby); 
+						break;
 			case "loc": $grpby="locid,l.name,l.addr,city,prov";
 						$join=array(array("core_node n","l.locid=n.loc","left"),array("core_status s","n.host=s.host","left"));
 						
