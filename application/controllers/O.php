@@ -104,4 +104,61 @@ class O extends CI_Controller {
 		
 		echo json_encode($retval);
 	}
+	
+	public function alrt(){
+		$retval=array('code'=>"403",'ttl'=>"Session closed",'msgs'=>"Please login");
+		$user=$this->session->userdata('user_token');
+		$auth=$this->input->get_request_header('X-token', TRUE);
+		$data=array();
+		if(isset($user)){
+			if($auth==$user){
+				$sev=$this->db->get("core_severity")->result_array();
+				$major=0;
+				$minor=0;
+				$critical=0;
+				foreach($sev as $severity){
+					$fld=$severity['sensor'];
+					$net=$severity['net'];
+					$min=$severity['mn'];
+					$max=$severity['mx'];
+					$svr=$severity['severity'];
+					$sql=$net==""?"":" and host in (select host from core_node where net='$net')";
+					$sql="select count(host) as cnt from core_status where $fld>=$min and $fld<=$max $sql";
+					$rs=$this->db->query($sql)->row_array();
+					switch($svr){
+						case "major": $major+=$rs['cnt']; break;
+						case "minor": $minor+=$rs['cnt']; break;
+						case "critical": $critical+=$rs['cnt']; break;
+					}
+				}
+				$res=array("major"=>$major,"minor"=>$minor,"critical"=>$critical);
+				$retval=array('code'=>"200",'ttl'=>"OK",'msgs'=>$res);
+			}else{
+				$retval=array('code'=>"403",'ttl'=>"Invalid session",'msgs'=>"Invalid token");
+			}
+		}
+		
+		echo json_encode($retval);
+	}
+	
+	public function trfc(){
+		$retval=array('code'=>"403",'ttl'=>"Session closed",'msgs'=>"Please login");
+		$user=$this->session->userdata('user_token');
+		$auth=$this->input->get_request_header('X-token', TRUE);
+		$data=array();
+		if(isset($user)){
+			if($auth==$user){
+				$sel="hostname,p.*";
+				$this->db->join("nmsdb.devices x","x.device_id=p.device_id");
+				$wh=array();//array("status"=>"0","downsince is not NULL"=>null);
+				$orde="";
+				$rs=$this->db->select($sel)->where($wh)->order_by($orde)->get("nmsdb.ports p")->result();
+				$retval=array('code'=>"200",'ttl'=>"OK",'msgs'=>$rs);
+			}else{
+				$retval=array('code'=>"403",'ttl'=>"Invalid session",'msgs'=>"Invalid token");
+			}
+		}
+		
+		echo json_encode($retval);
+	}
 }
