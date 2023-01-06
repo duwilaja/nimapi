@@ -151,8 +151,8 @@ class O extends CI_Controller {
 				$sel="hostname,p.*";
 				$this->db->join("nmsdb.devices x","x.device_id=p.device_id");
 				$wh=array();//array("status"=>"0","downsince is not NULL"=>null);
-				$orde="";
-				$rs=$this->db->select($sel)->where($wh)->order_by($orde)->get("nmsdb.ports p")->result();
+				$orde="ifInOctets_delta desc, ifOutOctets_delta desc";
+				$rs=$this->db->select($sel)->where($wh)->order_by($orde)->limit(10)->get("nmsdb.ports p")->result();
 				$retval=array('code'=>"200",'ttl'=>"OK",'msgs'=>$rs);
 			}else{
 				$retval=array('code'=>"403",'ttl'=>"Invalid session",'msgs'=>"Invalid token");
