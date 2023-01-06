@@ -31,6 +31,12 @@ class N extends CI_Controller {
 		$grpby="";
 		$join=array();
 		switch($x){
+			case "app": $grpby="";
+						$join=array(array("nmsdb.applications a","a.device_id=d.device_id"));
+						
+						$r=array("nmsdb.devices d",
+						"hostname,sysName,sysDescr,app_type,app_state",$where,$grpby); 
+						break;
 			case "cat": $grpby="typ";
 						$join=array(array("core_status s","n.host=s.host","left"));
 						
