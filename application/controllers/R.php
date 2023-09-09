@@ -57,7 +57,7 @@ class R extends CI_Controller {
 						$r=array("core_location l",
 						"locid,l.name,l.addr,count(s.host) as t, sum(s.status) as u, count(s.host)-sum(s.status) as d",$where,$grpby); 
 						break;
-			case "dvc": $r=array("core_node","host,name,net,loc,grp,typ,sla,snmpenabled",$where,$grpby); break;
+			case "dvc": $r=array("core_node","host,name,net,loc,grp,typ,sla,snmpenabled,svc,bw,lan,wan,sid",$where,$grpby); break;
 			case "prf": $params=$this->input->post(array("from","to"));
 						if($params["from"]=="") $params["from"]=$today;
 						if($params["to"]=="") $params["to"]=$today;
