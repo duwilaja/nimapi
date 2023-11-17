@@ -51,8 +51,9 @@ class N extends CI_Controller {
 						break;
 			case "dvc": $params=$this->input->post(array("status"));
 						if($params["status"]!="") $where=array("status"=>$params["status"]);
-						$join=array(array("core_status s","n.host=s.host","left"));
-						$r=array("core_node n","n.host,name,net,loc,grp,typ,if(status=1,'UP','DOWN') as stt,checked,svc,bw,lan,wan,sid,n.rowid",$where,$grpby); 
+						$join=array(array("core_status s","n.host=s.host","left"),array("core_location l","n.loc=l.locid","left"));
+						$r=array("core_node n",
+						"n.host,name,net,loc,addr,city,prov,grp,typ,if(status=1,'UP','DOWN') as stt,checked,svc,bw,lan,wan,sid,n.rowid",$where,$grpby); 
 						break;
 		}
 		$r[]=$join;
