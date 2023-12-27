@@ -53,7 +53,7 @@ class N extends CI_Controller {
 						if($params["status"]!="") $where=array("status"=>$params["status"]);
 						$join=array(array("core_status s","n.host=s.host","left"),array("core_location l","n.loc=l.locid","left"));
 						$r=array("core_node n",
-						"n.host,n.name,net,loc,addr,city,prov,grp,typ,if(status=1,'UP','DOWN') as stt,checked,svc,bw,lan,wan,sid,n.rowid",$where,$grpby); 
+						"n.host,n.name,net,loc,addr,city,prov,grp,typ,if(status=1,'UP','DOWN') as stt,checked,svc,bw,lan,wan,sid,if(status=1,'',downsince) as downtime,n.rowid",$where,$grpby); 
 						break;
 		}
 		$r[]=$join;
