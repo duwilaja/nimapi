@@ -30,6 +30,8 @@ class N extends CI_Controller {
 		$where=array();
 		$grpby="";
 		$join=array();
+		$wherein=array();
+		
 		switch($x){
 			case "app": $grpby="";
 						$join=array(array("nmsdb.applications a","a.device_id=d.device_id"));
@@ -49,14 +51,16 @@ class N extends CI_Controller {
 						$r=array("core_location l",
 						"locid,l.name,l.addr,city,prov,count(s.host) as t, sum(s.status) as u, count(s.host)-sum(s.status) as d",$where,$grpby); 
 						break;
-			case "dvc": $params=$this->input->post(array("status"));
+			case "dvc": $params=$this->input->post(array("status","typ_in"));
 						if($params["status"]!="") $where=array("status"=>$params["status"]);
+						if($params["typ_in"]!="") $wherein=array("typ"=>json_decode($params["typ_in"]));
 						$join=array(array("core_status s","n.host=s.host","left"),array("core_location l","n.loc=l.locid","left"));
 						$r=array("core_node n",
 						"n.host,n.name,net,loc,addr,city,prov,grp,typ,if(status=1,'UP','DOWN') as stt,checked,svc,bw,lan,wan,sid,if(status=1,'',downsince) as downtime,n.rowid",$where,$grpby); 
 						break;
 		}
 		$r[]=$join;
+		$r[]=$wherein;
 		return $r;
 	}
 	private function olah($d){
@@ -83,6 +87,11 @@ class N extends CI_Controller {
 					if(count($asql[4])>0){
 						foreach($asql[4] as $join){
 							$this->db->join($join[0],$join[1],$join[2]);
+						}
+					}
+					if(count($asql[5])>0){
+						foreach($asql[5] as $wherein){
+							$this-db->where_in($wherein[0],$wherein[1]);
 						}
 					}
 					$data=$this->db->select($asql[1])->from($asql[0])->get()->result();
