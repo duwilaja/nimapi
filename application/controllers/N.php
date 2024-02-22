@@ -51,8 +51,9 @@ class N extends CI_Controller {
 						$r=array("core_location l",
 						"locid,l.name,l.addr,city,prov,count(s.host) as t, sum(s.status) as u, count(s.host)-sum(s.status) as d",$where,$grpby); 
 						break;
-			case "dvc": $params=$this->input->post(array("status","typ_in"));
+			case "dvc": $params=$this->input->post(array("status","typ_in","grp_in"));
 						if($params["status"]!="") $where=array("status"=>$params["status"]);
+						if($params["grp_in"]!="") $wherein[]=array("grp",json_decode($params["grp_in"]));
 						if($params["typ_in"]!="") $wherein[]=array("typ",json_decode($params["typ_in"]));
 						$join=array(array("core_status s","n.host=s.host","left"),array("core_location l","n.loc=l.locid","left"));
 						$r=array("core_node n",
