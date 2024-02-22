@@ -51,12 +51,13 @@ class N extends CI_Controller {
 						$r=array("core_location l",
 						"locid,l.name,l.addr,city,prov,count(s.host) as t, sum(s.status) as u, count(s.host)-sum(s.status) as d",$where,$grpby); 
 						break;
-			case "dvc": $params=$this->input->post(array("status","typ_in"));
+			case "dvc": $params=$this->input->post(array("status","typ_in","grp_in"));
 						if($params["status"]!="") $where=array("status"=>$params["status"]);
-						if($params["typ_in"]!="") $wherein=array("typ"=>json_decode($params["typ_in"]));
+						if($params["grp_in"]!="") $wherein[]=array("grp",json_decode($params["grp_in"]));
+						if($params["typ_in"]!="") $wherein[]=array("typ",json_decode($params["typ_in"]));
 						$join=array(array("core_status s","n.host=s.host","left"),array("core_location l","n.loc=l.locid","left"));
 						$r=array("core_node n",
-						"n.host,n.name,net,loc,addr,city,prov,grp,typ,if(status=1,'UP','DOWN') as stt,checked,svc,bw,lan,wan,sid,if(status=1,'',downsince) as downtime,n.rowid",$where,$grpby); 
+						"n.host,n.name,net,loc,addr,city,prov,grp,typ,if(status=1,'UP','DOWN') as stt,checked,svc,n.bw,lan,wan,sid,if(status=1,'',downsince) as downtime,n.rowid",$where,$grpby); 
 						break;
 		}
 		$r[]=$join;
@@ -91,7 +92,7 @@ class N extends CI_Controller {
 					}
 					if(count($asql[5])>0){
 						foreach($asql[5] as $wherein){
-							$this-db->where_in($wherein[0],$wherein[1]);
+							$this->db->where_in($wherein[0],$wherein[1]);
 						}
 					}
 					$data=$this->db->select($asql[1])->from($asql[0])->get()->result();
