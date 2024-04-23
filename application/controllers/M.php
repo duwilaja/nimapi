@@ -89,6 +89,7 @@ class M extends CI_Controller {
 			values: '$msg'
 		  }";
 		}
+		header('Content-Type: application/json');
 		echo $out;
 	}
 	
