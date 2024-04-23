@@ -94,6 +94,25 @@ class M extends CI_Controller {
 	}
 	
 	private function geofence($nik,$lat,$lng){
-		return true;
+		//default false
+		$ret=false;
+		//default 100 meter
+		$max=100;
+		
+		//get all loc of this employee
+		$usr=$this->db->where("unik",$nik)->get("core_user")->row();
+		if(is_object($usr)){// ketemu
+			if(trim($usr->uloc)==''){
+				$ret=true; //user is national
+			}else{
+				$locs=explode(",",$usr->uloc);
+				//get all locs and the distances
+				$geos=$this->db->select("distance_between(lat,lng,'$lat','$lng') as jarak")->where_in("locid",$locs)->get("core_location")->result();
+				foreach($geos as $g){
+					if(floatval($g->jarak)<=$max) $ret=true;
+				}
+			}
+		}
+		return $ret;
 	}
 }
