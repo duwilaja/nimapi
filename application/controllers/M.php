@@ -50,29 +50,36 @@ class M extends CI_Controller {
 				}
 				if($go){
 					//do absensi
-					$photo=$this->upload('photo');
-					$datain=array("dt"=>date('Y-m-d'),"nik"=>$nik,"tmin"=>$tm,"edin"=>$tm,"reasonin"=>$ctt,"latin"=>$lat,"lngin"=>$lng,"photoin"=>$photo,"status"=>"onsite","typ"=>"Masuk");
-					$dataout=array("tmout"=>$tm,"edout"=>$tm,"reasonout"=>$ctt,"latout"=>$lat,"lngout"=>$lng,"photoout"=>$photo);
-					$abs=$this->db->where(array("dt"=>date('Y-m-d'),"nik"=>$nik))->get("hr_attend")->row();
-					if(is_object($abs)){// periksa
-						if($abs->tmin=='00:00:00'){ //in
-							$this->db->update("hr_attend",$datain,"rowid=".$abs->rowid);
-						}elseif($abs->tmout=='00:00:00'){ //out
-							$this->db->update("hr_attend",$dataout,"rowid=".$abs->rowid);
-						}else{
-							$msg="Already out";
+					$photo=$this->doupload('photo');
+					if($photo!=''){
+						$datain=array("dt"=>date('Y-m-d'),"nik"=>$nik,"tmin"=>$tm,"edin"=>$tm,"reasonin"=>$ctt,"latin"=>$lat,"lngin"=>$lng,"photoin"=>$photo,"status"=>"onsite","typ"=>"Masuk");
+						$dataout=array("tmout"=>$tm,"edout"=>$tm,"reasonout"=>$ctt,"latout"=>$lat,"lngout"=>$lng,"photoout"=>$photo);
+						$abs=$this->db->where(array("dt"=>date('Y-m-d'),"nik"=>$nik))->get("hr_attend")->row();
+						if(is_object($abs)){// periksa
+							if($abs->tmin=='00:00:00'){ //in
+								$this->db->update("hr_attend",$datain,"rowid=".$abs->rowid);
+								$msg="In";
+							}elseif($abs->tmout=='00:00:00'){ //out
+								$this->db->update("hr_attend",$dataout,"rowid=".$abs->rowid);
+								$msg="Out";
+							}else{
+								$msg="Already Out";
+							}
+						}else{ //no record yet
+							$this->db->insert("hr_attend",$datain);
+							$msg="In";
 						}
-					}else{ //no record yet
-						$this->db->insert("hr_attend",$datain);
-					}
-					if($this->db->affected_rows()>0){
-						$msg="Success";
-						$success=true;
+						if($this->db->affected_rows()>0){
+							$msg="Success $msg";
+							$success=true;
+						}else{
+							$msg="No update";
+						}
 					}else{
-						$msg="No update";
+						$msg="Photo upload failed";
 					}
 				}else{
-					$msg="Outside office area, please make a note";
+					$msg="Outside office area, please add a note";
 				}
 			}else{
 				$msg="Device doesnt match, please ask admin to reset";
@@ -94,7 +101,7 @@ class M extends CI_Controller {
 		echo $out;
 	}
 	
-	private function upload($userfile){
+	private function doupload($userfile){
 		$config['upload_path']          = './files/';
 		$config['allowed_types']        = 'jpg|png';
 		
