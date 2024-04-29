@@ -50,8 +50,9 @@ class M extends CI_Controller {
 				}
 				if($go){
 					//do absensi
-					$datain=array("dt"=>date('Y-m-d'),"nik"=>$nik,"tmin"=>$tm,"edin"=>$tm,"reasonin"=>$ctt,"latin"=>$lat,"lngin"=>$lng,"status"=>"onsite","typ"=>"Masuk");
-					$dataout=array("tmout"=>$tm,"edout"=>$tm,"reasonout"=>$ctt,"latout"=>$lat,"lngout"=>$lng);
+					$photo=$this->upload('photo');
+					$datain=array("dt"=>date('Y-m-d'),"nik"=>$nik,"tmin"=>$tm,"edin"=>$tm,"reasonin"=>$ctt,"latin"=>$lat,"lngin"=>$lng,"photoin"=>$photo,"status"=>"onsite","typ"=>"Masuk");
+					$dataout=array("tmout"=>$tm,"edout"=>$tm,"reasonout"=>$ctt,"latout"=>$lat,"lngout"=>$lng,"photoout"=>$photo);
 					$abs=$this->db->where(array("dt"=>date('Y-m-d'),"nik"=>$nik))->get("hr_attend")->row();
 					if(is_object($abs)){// periksa
 						if($abs->tmin=='00:00:00'){ //in
@@ -91,6 +92,24 @@ class M extends CI_Controller {
 		}
 		header('Content-Type: application/json');
 		echo $out;
+	}
+	
+	private function upload($userfile){
+		$config['upload_path']          = './files/';
+		$config['allowed_types']        = 'jpg|png';
+		
+		$this->load->library('upload', $config);
+		
+		if ( ! $this->upload->do_upload($userfile))
+		{
+			$error = array('error' => $this->upload->display_errors());
+			return '';
+		}
+		else
+		{
+			$data = array('upload_data' => $this->upload->data());
+			return $data['file_name'];
+		}
 	}
 	
 	private function geofence($nik,$lat,$lng){
