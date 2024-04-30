@@ -69,7 +69,7 @@ class M extends CI_Controller {
 							$this->db->insert("hr_attend",$datain);
 							$msg="In";
 						}
-						if($this->db->affected_rows()>0){
+						if($success && $this->db->affected_rows()>0){
 							$msg="Success $msg";
 							$success=true;
 						}else{
