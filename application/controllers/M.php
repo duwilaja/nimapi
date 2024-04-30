@@ -73,7 +73,7 @@ class M extends CI_Controller {
 							$msg="Success $msg";
 							$success=true;
 						}else{
-							$msg="No update";
+							$msg="$msg. No update";
 						}
 					}else{
 						$msg="Photo upload failed";
