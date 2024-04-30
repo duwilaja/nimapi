@@ -59,21 +59,21 @@ class M extends CI_Controller {
 							if($abs->tmin=='00:00:00'){ //in
 								$this->db->update("hr_attend",$datain,"rowid=".$abs->rowid);
 								$msg="In";
+								$success=true;
 							}elseif($abs->tmout=='00:00:00'){ //out
 								$this->db->update("hr_attend",$dataout,"rowid=".$abs->rowid);
 								$msg="Out";
+								$success=true;
 							}else{
 								$msg="Already Out";
 							}
 						}else{ //no record yet
 							$this->db->insert("hr_attend",$datain);
 							$msg="In";
-						}
-						if($success && $this->db->affected_rows()>0){
-							$msg="Success $msg";
 							$success=true;
-						}else{
-							$msg="$msg. No update";
+						}
+						if($success){
+							$msg="Success $msg";
 						}
 					}else{
 						$msg="Photo upload failed";
