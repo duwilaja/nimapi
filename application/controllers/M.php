@@ -115,7 +115,7 @@ class M extends CI_Controller {
 		else
 		{
 			$data = array('upload_data' => $this->upload->data());
-			return $data['file_name'];
+			return $this->upload->data('file_name');
 		}
 	}
 	
