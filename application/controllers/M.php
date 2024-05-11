@@ -25,7 +25,7 @@ class M extends CI_Controller {
 	}
 	
 	public function history($nik){
-		$rs=$this->db->select("nik,dt,tmin,tmout")->where("nik",$nik)->order_by("dt","DESC")->limit(10)->get("hr_attend")->result();
+		$rs=$this->db->select("nik,dt,tmin,tmout,photoin,photoout")->where("nik",$nik)->order_by("dt","DESC")->limit(10)->get("hr_attend")->result();
 		header('Content-Type: application/json');
 		echo json_encode($rs);
 	}
