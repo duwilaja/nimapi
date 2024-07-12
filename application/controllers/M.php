@@ -52,7 +52,7 @@ class M extends CI_Controller {
 			$msg=json_encode($usr);
 		}
 		header('Content-Type: application/json');
-		echo getout($success,$msg);
+		echo $this->getout($success,$msg);
 	}
 	public function whoami(){
 		$success=false; $msg="Unknown device, please login";
@@ -67,7 +67,7 @@ class M extends CI_Controller {
 		}
 		
 		header('Content-Type: application/json');
-		echo getout($success,$msg);
+		echo $this->getout($success,$msg);
 	}
 	
 	public function history($nik){
@@ -138,7 +138,7 @@ class M extends CI_Controller {
 		}
 		
 		header('Content-Type: application/json');
-		echo getout($success,$msg);
+		echo $this->getout($success,$msg);
 	}
 	
 	private function doupload($userfile){
