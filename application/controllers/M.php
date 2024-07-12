@@ -24,12 +24,57 @@ class M extends CI_Controller {
 		return "";
 	}
 	
+	private function getout($success,$msg){
+		$out="{
+			error: true,
+			status: 401,
+			msg: '$msg'
+		  }";
+		
+		if($success){ 
+		  $out="{
+			status: 200,
+			values: '$msg'
+		  }";
+		}
+		return $out;
+	}
+	
+	public function in(){
+		$success=false; $msg="Unknown user";
+		$nik=$this->input->post("nip");
+		$did=$this->input->post("device_id");
+		$pwd=$this->input->post("pwd");
+		$usr=$this->db->select("unik,uname,ugrp")->where(array("upwd"=>md5($pwd),"unik"=>$nik))->get("core_user")->row();
+		if(is_object($usr)){
+			$this->db->update("hr_kary",array("device"=>$did),"nik='$nik'");
+			$success=true;
+			$msg=json_encode($usr);
+		}
+		header('Content-Type: application/json');
+		echo getout($success,$msg);
+	}
+	public function whoami(){
+		$success=false; $msg="Unknown device, please login";
+		$device=$this->input->get_request_header('X-device', TRUE);
+		$kar=$this->db->where(array("device"=>$device,"device <>"=>""))->get("hr_kary")->row();
+		if(is_object($kar)){
+			$usr=$this->db->select("unik,uname,ugrp")->where(array("unik <>"=>"","unik"=>$kar->nik))->get("core_user")->row();
+			if(is_object($usr)){
+				$msg=json_encode($usr);
+				$success=true;
+			}
+		}
+		
+		header('Content-Type: application/json');
+		echo getout($success,$msg);
+	}
+	
 	public function history($nik){
 		$rs=$this->db->select("nik,dt,tmin,tmout,photoin,photoout")->where("nik",$nik)->order_by("dt","DESC")->limit(10)->get("hr_attend")->result();
 		header('Content-Type: application/json');
 		echo json_encode($rs);
 	}
-	
 	public function attend(){
 		date_default_timezone_set("Asia/Jakarta");
 		
@@ -91,20 +136,9 @@ class M extends CI_Controller {
 				$msg="Device doesnt match, please ask admin to reset";
 			}
 		}
-		$out="{
-			error: true,
-			status: 401,
-			msg: '$msg'
-		  }";
 		
-		if($success){ 
-		  $out="{
-			status: 200,
-			values: '$msg'
-		  }";
-		}
 		header('Content-Type: application/json');
-		echo $out;
+		echo getout($success,$msg);
 	}
 	
 	private function doupload($userfile){
