@@ -75,10 +75,33 @@ class M extends CI_Controller {
 		header('Content-Type: application/json');
 		echo json_encode($rs);
 	}
+	public function story($nik){
+		$rs=$this->db->select("nik,txt,photo,dtm")->where("nik",$nik)->order_by("dtm","DESC")->limit(10)->get("hr_story")->result();
+		header('Content-Type: application/json');
+		echo json_encode($rs);
+	}
+	public function upstory(){
+		date_default_timezone_set("Asia/Jakarta");
+		
+		$success=false; $msg='"Unknown device, please login"';
+		$device=$this->input->get_request_header('X-device', TRUE);
+		$nik=$this->input->post("nip");
+		$txt=$this->input->post("txt");
+		$kar=$this->db->where(array("device"=>$device,"nik"=>$nik))->get("hr_kary")->row();
+		if(is_object($kar)){//ketemu
+			$photo=$this->doupload('photo','./story/');
+			$datain=array("nik"=>$nik,"txt"=>$txt,"photo"=>$photo,"dtm"=>date("Y-m-d H:i:s"));
+			$this->db->insert("hr_story",$datain);
+			$success=true;
+			$msg='"Data saved"';
+		}
+		header('Content-Type: application/json');
+		echo $this->getout($success,$msg);
+	}
 	public function attend(){
 		date_default_timezone_set("Asia/Jakarta");
 		
-		$msg="'Wrong NIK'";
+		$msg='"Wrong NIK"';
 		$nik=$this->input->post("nip");
 		$did=$this->input->post("device_id");
 		$lat=$this->input->post("latitude");
@@ -141,8 +164,8 @@ class M extends CI_Controller {
 		echo $this->getout($success,$msg);
 	}
 	
-	private function doupload($userfile){
-		$config['upload_path']          = './files/';
+	private function doupload($userfile,$dir='./files/'){
+		$config['upload_path']          = $dir;
 		$config['allowed_types']        = 'jpg|png';
 		
 		$this->load->library('upload', $config);
