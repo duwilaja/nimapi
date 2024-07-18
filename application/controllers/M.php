@@ -25,23 +25,23 @@ class M extends CI_Controller {
 	}
 	
 	private function getout($success,$msg){
-		$out="{
-			error: true,
-			status: 401,
-			msg: $msg
-		  }";
+		$out='{
+			"error": true,
+			"status": 401,
+			"msg": '.$msg.'
+		  }';
 		
 		if($success){ 
-		  $out="{
-			status: 200,
-			values: $msg
-		  }";
+		  $out='{
+			"status": 200,
+			"values": '.$msg.
+		  '}';
 		}
-		return json_encode($out);
+		return ($out);
 	}
 	
 	public function in(){
-		$success=false; $msg="'Unknown user'";
+		$success=false; $msg='"Unknown user"';
 		$nik=$this->input->post("nip");
 		$did=$this->input->post("device_id");
 		$pwd=$this->input->post("pwd");
@@ -55,7 +55,7 @@ class M extends CI_Controller {
 		echo $this->getout($success,$msg);
 	}
 	public function whoami(){
-		$success=false; $msg="'Unknown device, please login'";
+		$success=false; $msg='"Unknown device, please login"';
 		$device=$this->input->get_request_header('X-device', TRUE);
 		$kar=$this->db->where(array("device"=>$device,"device <>"=>""))->get("hr_kary")->row();
 		if(is_object($kar)){
@@ -116,7 +116,7 @@ class M extends CI_Controller {
 								$msg="Out";
 								$success=true;
 							}else{
-								$msg="Already Out";
+								$msg='"Already Out"';
 							}
 						}else{ //no record yet
 							$this->db->insert("hr_attend",$datain);
@@ -124,16 +124,16 @@ class M extends CI_Controller {
 							$success=true;
 						}
 						if($success){
-							$msg="'Success $msg'";
+							$msg='"Success '.$msg.'"';
 						}
 					}else{
-						$msg="'Photo upload failed'";
+						$msg='"Photo upload failed"';
 					}
 				}else{
-					$msg="'Outside office area, please add a note'";
+					$msg='"Outside office area, please add a note"';
 				}
 			}else{
-				$msg="'Device doesnt match, please ask admin to reset'";
+				$msg='"Device doesnt match, please ask admin to reset"';
 			}
 		}
 		
