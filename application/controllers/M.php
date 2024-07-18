@@ -37,7 +37,7 @@ class M extends CI_Controller {
 			values: $msg
 		  }";
 		}
-		return $out;
+		return json_encode($out);
 	}
 	
 	public function in(){
