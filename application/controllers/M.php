@@ -70,6 +70,18 @@ class M extends CI_Controller {
 		echo $this->getout($success,$msg);
 	}
 	
+	public function notifs($grp){
+		header('Content-Type: application/json');
+		if($grp!=''){
+			$this->db->select("event,m.host,msg,dtm");
+			$this->db->from("core_notify m");
+			$this->db->join("core_node n","n.host=m.host");
+			$rs=$this->db->where("grp",$grp)->order_by("dtm","DESC")->limit(50)->get()->result();
+			echo json_encode($rs);
+		}else{
+			echo json_encode(array());
+		}
+	}
 	public function history($nik){
 		$rs=$this->db->select("nik,dt,tmin,tmout,photoin,photoout")->where("nik",$nik)->order_by("dt","DESC")->limit(10)->get("hr_attend")->result();
 		header('Content-Type: application/json');
