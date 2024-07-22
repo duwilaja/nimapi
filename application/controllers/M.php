@@ -71,15 +71,15 @@ class M extends CI_Controller {
 	}
 	
 	public function notifs($grp){
+		header('Content-Type: application/json');
 		if($grp!=''){
 			$this->db->select("event,m.host,msg,dtm");
 			$this->db->from("core_notify m");
 			$this->db->join("core_node n","n.host=m.host");
 			$rs=$this->db->where("grp",$grp)->order_by("dtm","DESC")->limit(50)->get()->result();
-			header('Content-Type: application/json');
 			echo json_encode($rs);
 		}else{
-			echo "";
+			echo json_encode(array());
 		}
 	}
 	public function history($nik){
