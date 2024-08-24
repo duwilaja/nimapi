@@ -101,7 +101,7 @@ class M extends CI_Controller {
 		$txt=$this->input->post("txt");
 		$kar=$this->db->where(array("device"=>$device,"nik"=>$nik))->get("hr_kary")->row();
 		if(is_object($kar)){//ketemu
-			$photo=$this->doupload('photo','./story/');
+			$photo=$this->douploads('photo','./story/');
 			$datain=array("nik"=>$nik,"txt"=>$txt,"photo"=>$photo,"dtm"=>date("Y-m-d H:i:s"));
 			$this->db->insert("hr_story",$datain);
 			$success=true;
@@ -192,6 +192,32 @@ class M extends CI_Controller {
 			$data = array('upload_data' => $this->upload->data());
 			return $this->upload->data('file_name');
 		}
+	}
+	private function douploads($fld,$dir='./files/')
+	{
+		$config['upload_path']          = $dir;
+		$config['allowed_types']        = 'jpg|png';
+		
+		$ret=array();
+		// Count total files
+        $countfiles = count($_FILES[$fld]['name']);
+		// Looping all files
+        for($i=0;$i<$countfiles;$i++){
+			if(!empty($_FILES[$fld]['name'][$i])){
+				// Define new $_FILES array - $_FILES['file']
+				  $_FILES['file']['name'] = $_FILES[$fld]['name'][$i];
+				  $_FILES['file']['type'] = $_FILES[$fld]['type'][$i];
+				  $_FILES['file']['tmp_name'] = $_FILES[$fld]['tmp_name'][$i];
+				  $_FILES['file']['error'] = $_FILES[$fld]['error'][$i];
+				  $_FILES['file']['size'] = $_FILES[$fld]['size'][$i];
+				
+				if ( $this->upload->do_upload('file')){
+						$ret[]= $this->upload->data('file_name');
+					}
+			}
+		}
+		
+		return implode(";",$ret);
 	}
 	
 	private function geofence($nik,$lat,$lng){
