@@ -193,10 +193,11 @@ class M extends CI_Controller {
 			return $this->upload->data('file_name');
 		}
 	}
-	private function douploads($fld,$dir='./files/')
-	{
+	private function douploads($fld,$dir='./files/'){
 		$config['upload_path']          = $dir;
 		$config['allowed_types']        = 'jpg|png';
+		
+		$this->load->library('upload', $config);
 		
 		$ret=array();
 		// Count total files
