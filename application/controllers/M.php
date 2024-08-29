@@ -129,16 +129,16 @@ class M extends CI_Controller {
 				if($kar->device==''){//update device id
 					$this->db->update("hr_kary",array("device"=>$did),"nik='$nik'");
 				}
-				$go=true;
-				if($ctt==''){
-					//periksa geofence
-					$go=$this->geofence($nik,$lat,$lng);
+				$go=true;$stt='onsite';
+				if(!$this->geofence($nik,$lat,$lng)){//periksa geofence
+					$stt='offsite';
+					if($ctt=='') $go=false;
 				}
 				if($go){
 					//do absensi
 					$photo=$this->doupload('photo');
 					if($photo!=''){
-						$datain=array("dt"=>date('Y-m-d'),"nik"=>$nik,"tmin"=>$tm,"edin"=>$tm,"reasonin"=>$ctt,"latin"=>$lat,"lngin"=>$lng,"photoin"=>$photo,"status"=>"onsite","typ"=>"Masuk");
+						$datain=array("dt"=>date('Y-m-d'),"nik"=>$nik,"tmin"=>$tm,"edin"=>$tm,"reasonin"=>$ctt,"latin"=>$lat,"lngin"=>$lng,"photoin"=>$photo,"status"=>$stt,"typ"=>"Masuk");
 						$dataout=array("tmout"=>$tm,"edout"=>$tm,"reasonout"=>$ctt,"latout"=>$lat,"lngout"=>$lng,"photoout"=>$photo);
 						$abs=$this->db->where(array("dt"=>date('Y-m-d'),"nik"=>$nik))->get("hr_attend")->row();
 						if(is_object($abs)){// periksa
