@@ -69,6 +69,24 @@ class M extends CI_Controller {
 		header('Content-Type: application/json');
 		echo $this->getout($success,$msg);
 	}
+	public function sup(){
+		
+		$success=false; $msg='"Unknown referal, please check"';
+		$device=$this->input->get_request_header('X-referal', TRUE);
+		if($device=='a46e382c34a63f12d6431a8cb4a77fee17f37ee4e51cfdf487b3de42104ea8e5'){
+			$uid=$this->input->post('uid');
+			$uname=$this->input->post('uname');
+			$upwd=$this->input->post('upwd');
+			
+			$datain=array("uid"=>$uid,"uname"=>$uname,"uloc"=>'IOS',"upwd"=>$pwd,"ulvl"=>"11","ugrp"=>'',"uprof"=>'',"uavatar"=>'');
+			$this->db->insert("core_user",$datain);
+			$msg='Success';
+			$success=true;
+		}
+		
+		header('Content-Type: application/json');
+		echo $this->getout($success,$msg);
+	}
 	
 	public function notifs($grp){
 		header('Content-Type: application/json');
@@ -83,7 +101,7 @@ class M extends CI_Controller {
 		}
 	}
 	public function history($nik){
-		$rs=$this->db->select("nik,dt,tmin,tmout,photoin,photoout")->where("nik",$nik)->order_by("dt","DESC")->limit(10)->get("hr_attend")->result();
+		$rs=$this->db->select("nik,dt,concat(tmin,' WIB') as tmin,concat(tmout,' WIB') as tmout,photoin,photoout")->where("nik",$nik)->order_by("dt","DESC")->limit(10)->get("hr_attend")->result();
 		header('Content-Type: application/json');
 		echo json_encode($rs);
 	}
