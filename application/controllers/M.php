@@ -78,7 +78,7 @@ class M extends CI_Controller {
 			$uname=$this->input->post('uname');
 			$upwd=$this->input->post('upwd');
 			
-			$datain=array("uid"=>$uid,"uname"=>$uname,"uloc"=>'IOS',"upwd"=>$pwd,"ulvl"=>"11","ugrp"=>'',"uprof"=>'',"uavatar"=>'');
+			$datain=array("uid"=>$uid,"uname"=>$uname,"uloc"=>'IOS',"upwd"=>md5($pwd),"ulvl"=>"11","ugrp"=>'',"uprof"=>'',"uavatar"=>'');
 			$this->db->insert("core_user",$datain);
 			$msg='Success';
 			$success=true;
