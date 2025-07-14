@@ -3,25 +3,45 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class M extends CI_Controller {
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see https://codeigniter.com/user_guide/general/urls.html
-	 */
-	public function index()
+	public function __construct()
 	{
-		//$this->load->view('welcome_message');
-		return "";
+		parent::__construct();
+		// Your own constructor code
+		
+		// Allow some methods?
+		$filtered = array(
+			'attend',
+			'in'
+		);
+		if ( in_array($this->router->fetch_method(), $filtered ) )
+		{
+			$cd=$this->input->post("app_version_code");
+			$nm=$this->input->post("app_version");
+			$ver = $this->vercheck($cd,$nm);
+			if(!$ver[0]){
+				$data["ver"]=$ver;
+				$this->err($ver[1]);
+			}
+		}
+	}
+	
+	public function index(){
+		echo "";
+	}
+	public function err($ver)
+	{
+		$out='{
+		  "status": 426,
+		  "error": {
+			"code": "VERSION_NOT_SUPPORTED",
+			"message": "'.$ver["release_notes"].'",
+			"latest_version": "'.$ver["version_code"].'",
+			"link":"'.$ver["download_url"].'"
+		  }
+		}';
+		header('Content-Type: application/json');
+		echo $out;
+		exit;
 	}
 	
 	private function getout($success,$msg){
@@ -38,6 +58,17 @@ class M extends CI_Controller {
 		  '}';
 		}
 		return ($out);
+	}
+	
+	private function vercheck($code,$ver){
+		$ok=false;
+		$v=$this->db->get("app_versions")->row_array();
+		if(isset($v)){
+			if($v["version_code"]==$code && $v["version_name"]==$ver){
+				$ok=true;
+			}
+		}
+		return array($ok,$v);
 	}
 	
 	public function in(){
@@ -73,7 +104,7 @@ class M extends CI_Controller {
 		
 		$success=false; $msg='"Unknown referal, please check"';
 		$device=$this->input->get_request_header('X-referal', TRUE);
-		if($device=='a46e382c34a63f12d6431a8cb4a77fee17f37ee4e51cfdf487b3de42104ea8e5'){
+		if($device=='a46e382c34'){
 			$uid=$this->input->post('uid');
 			$uname=$this->input->post('uname');
 			$upwd=$this->input->post('upwd');
